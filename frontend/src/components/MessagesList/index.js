@@ -3,6 +3,7 @@ import React, { useState, useEffect, useReducer, useRef } from "react";
 import { isSameDay, parseISO, format } from "date-fns";
 import openSocket from "socket.io-client";
 import clsx from "clsx";
+import ReplyIcon from "@material-ui/icons/Reply";
 
 import { green } from "@material-ui/core/colors";
 import {
@@ -178,6 +179,19 @@ const useStyles = makeStyles(theme => ({
 		display: "flex",
 		color: "#6bcbef",
 		fontWeight: 500,
+	},
+
+	messageForwarded: {
+		display: "flex",
+		alignItems: "center",
+	},
+
+	messageForwardedText: {
+		color: "gray"
+	},
+
+	mirroredIcon: {
+		transform: "scaleX(-1)",
 	},
 
 	textContentItem: {
@@ -575,6 +589,12 @@ const MessagesList = ({ ticketId, isGroup, setReplyingMessage }) => {
 										{message.contact?.name}
 									</span>
 								)}
+								{message.isForwarded && (
+									<div className={classes.messageForwarded}>
+										<ReplyIcon className={clsx(classes.mirroredIcon, classes.messageForwardedText)} />
+										<span className={classes.messageForwardedText}>{i18n.t("forwardMessage.text")}</span><br />
+									</div>
+								)}
 								{message.mediaUrl && checkMessageMedia(message)}
 								<div className={classes.textContentItem}>
 									{message.quotedMsg && renderQuotedMessage(message)}
@@ -615,6 +635,12 @@ const MessagesList = ({ ticketId, isGroup, setReplyingMessage }) => {
 											className={classes.deletedIcon}
 										/>
 									)}
+									{message.isForwarded && (
+									<div className={classes.messageForwarded}>
+										<ReplyIcon className={clsx(classes.mirroredIcon, classes.messageForwardedText)} />
+										<span className={classes.messageForwardedText}>{i18n.t("forwardMessage.text")}</span><br />
+									</div>
+								)}
 									{message.quotedMsg && renderQuotedMessage(message)}
 									<MarkdownWrapper>{message.body}</MarkdownWrapper>
 									<span className={classes.timestamp}>
