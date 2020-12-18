@@ -134,6 +134,15 @@ const messages = {
 					actions: "Acciones",
 				},
 			},
+			forwardMessage: {
+				text: "Reenviado"
+			},
+			forwardMessageModal: {
+				title: "Reenviar mensaje",
+				buttons: {
+					ok: "Reenviar"
+				}
+			},
 			contactModal: {
 				title: {
 					add: "Agregar contacto",
