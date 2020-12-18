@@ -1,4 +1,6 @@
 import { Request, Response } from "express";
+import SetTicketMessageIsForwarded from "../helpers/SetTicketMessageIsForwarded";
+// import SetTicketMessageIsForwarded from "../helpers/SetTicketMessageIsForwarded";
 
 import SetTicketMessagesAsRead from "../helpers/SetTicketMessagesAsRead";
 import { getIO } from "../libs/socket";
@@ -19,6 +21,7 @@ type MessageData = {
   fromMe: boolean;
   read: boolean;
   quotedMsg?: Message;
+  isForwarded?: boolean;
 };
 
 export const index = async (req: Request, res: Response): Promise<Response> => {
@@ -37,7 +40,7 @@ export const index = async (req: Request, res: Response): Promise<Response> => {
 
 export const store = async (req: Request, res: Response): Promise<Response> => {
   const { ticketId } = req.params;
-  const { body, quotedMsg }: MessageData = req.body;
+  const { body, quotedMsg, isForwarded }: MessageData = req.body;
   const medias = req.files as Express.Multer.File[];
 
   const ticket = await ShowTicketService(ticketId);
@@ -49,10 +52,15 @@ export const store = async (req: Request, res: Response): Promise<Response> => {
       })
     );
   } else {
-    await SendWhatsAppMessage({ body, ticket, quotedMsg });
+    const msg = await SendWhatsAppMessage({ body, ticket, quotedMsg });
+    if (isForwarded) {
+      setTimeout(() => {
+        SetTicketMessageIsForwarded(msg.id.id);
+      }, 1000);
+    }
   }
 
-  await SetTicketMessagesAsRead(ticket);
+  SetTicketMessagesAsRead(ticket);
 
   return res.send();
 };
