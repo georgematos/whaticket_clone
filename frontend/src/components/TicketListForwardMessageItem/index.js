@@ -78,10 +78,14 @@ const useStyles = makeStyles(theme => ({
 	acceptButton: {
 		position: "absolute",
 		left: "50%",
+	},
+
+	selectedTicketText: {
+		color: "white",
 	}
 }));
 
-const TicketListForwardMessageItem = ({ ticket, sendData }) => {
+const TicketListForwardMessageItem = ({ ticket, selectedTicket, sendData }) => {
 	const classes = useStyles();
 	const { ticketId } = useParams();
 	const isMounted = useRef(true);
@@ -94,7 +98,6 @@ const TicketListForwardMessageItem = ({ ticket, sendData }) => {
 
 	const handleSelectTicket = (e, ticket) => {
 		sendData(ticket)
-		console.log(ticket);
 	};
 
 	return (
@@ -108,7 +111,7 @@ const TicketListForwardMessageItem = ({ ticket, sendData }) => {
 				}}
 				selected={ticketId && +ticketId === ticket.id}
 				className={clsx(classes.ticket, {
-					[classes.pendingTicket]: ticket.status === "pending",
+					[classes.pendingTicket]: ticket.status === "pending"
 				})}
 			>
 				<ListItemAvatar>
@@ -125,6 +128,7 @@ const TicketListForwardMessageItem = ({ ticket, sendData }) => {
 								component="span"
 								variant="body2"
 								color="textPrimary"
+								className={clsx({[classes.selectedTicketText]: ticket === selectedTicket})}
 							>
 								{ticket.contact.name}
 							</Typography>
@@ -137,7 +141,7 @@ const TicketListForwardMessageItem = ({ ticket, sendData }) => {
 							)}
 							{ticket.lastMessage && (
 								<Typography
-									className={classes.lastMessageTime}
+									className={clsx(classes.lastMessageTime, {[classes.selectedTicketText]: ticket === selectedTicket})}
 									component="span"
 									variant="body2"
 									color="textSecondary"
@@ -154,7 +158,7 @@ const TicketListForwardMessageItem = ({ ticket, sendData }) => {
 					secondary={
 						<span className={classes.contactNameWrapper}>
 							<Typography
-								className={classes.contactLastMessage}
+								className={clsx(classes.contactLastMessage, {[classes.selectedTicketText]: ticket === selectedTicket})}
 								noWrap
 								component="span"
 								variant="body2"

@@ -4,7 +4,6 @@ import DialogActions from "@material-ui/core/DialogActions";
 import DialogContent from "@material-ui/core/DialogContent";
 import { useHistory } from "react-router-dom";
 import DialogTitle from "@material-ui/core/DialogTitle";
-import { green } from "@material-ui/core/colors";
 import { makeStyles } from "@material-ui/core/styles";
 import clsx from "clsx";
 import React, { useEffect, useState } from "react";
@@ -15,8 +14,8 @@ import ButtonWithSpinner from "../ButtonWithSpinner";
 import TicketListForwardMessageItem from "../TicketListForwardMessageItem";
 
 const useStyles = makeStyles(theme => ({
-	selectedMessage: {
-		backgroundColor: green[100]
+	selectedTicketBackground: {
+		backgroundColor: "#4caf50",
 	}
 }))
 
@@ -56,15 +55,7 @@ const ForwardMessageModal = ({ modalOpen, onClose, message }) => {
 	const handleForwardMessage = async data => {
 		data.preventDefault();
 		message.isForwarded = true;
-		await api.post(`/messages/${selectedTicket.id}`, message)
-			.then(
-				(resp) => {
-					console.log(resp)
-				},
-				(err) => {
-					console.log(err)
-				}
-			)
+		await api.post(`/messages/${selectedTicket.id}`, message);
 		history.push(`/tickets/${selectedTicket.id}`);
 		handleClose()
 	}
@@ -83,13 +74,15 @@ const ForwardMessageModal = ({ modalOpen, onClose, message }) => {
 					{tickets.map(ticket => (
 						<div key={ticket.id}
 							className={clsx(classes.ticket, {
-								[classes.selectedMessage]: ticket === selectedTicket
+								[classes.selectedTicketBackground]: ticket === selectedTicket
 							})}
-						>{
+						>
+							{
 								ticket.status === 'open' ?
-									(<TicketListForwardMessageItem ticket={ticket} sendData={getData} />) :
+									(<TicketListForwardMessageItem ticket={ticket} selectedTicket={selectedTicket} sendData={getData} />) :
 									null
-							}</div>
+							}
+						</div>
 					))}
 				</DialogContent>
 				<DialogActions>
