@@ -17,7 +17,7 @@ interface Request {
   ticket: Ticket;
   quotedMsg?: Message;
   mediaUrl?: string;
-  isForwarded: boolean;
+  isForwarded?: boolean;
 }
 
 const sendMessage = async (
