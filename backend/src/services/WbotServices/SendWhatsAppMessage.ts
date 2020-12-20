@@ -31,7 +31,7 @@ const sendMessage = async (
   return message;
 };
 
-const funcaoDeEnvioFinal = async (
+const prepareAndSend = async (
   pathName: string,
   ticket: Ticket,
   chatId: string,
@@ -66,7 +66,7 @@ const SendWhatsAppMessage = async ({
   if (quotedMsg) {
     if (isForwarded) {
       try {
-        return funcaoDeEnvioFinal(
+        return prepareAndSend(
           pathName,
           ticket,
           chatId,
@@ -86,14 +86,7 @@ const SendWhatsAppMessage = async ({
   }
 
   try {
-    return funcaoDeEnvioFinal(
-      pathName,
-      ticket,
-      chatId,
-      body,
-      mediaUrl,
-      options
-    );
+    return prepareAndSend(pathName, ticket, chatId, body, mediaUrl, options);
   } catch (err) {
     console.log(err);
     throw new AppError("ERR_SENDING_WAPP_MSG");
