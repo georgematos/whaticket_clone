@@ -61,7 +61,7 @@ export const store = async (req: Request, res: Response): Promise<Response> => {
     if (isForwarded) {
       setTimeout(() => {
         SetTicketMessageIsForwarded(msg.id.id);
-      }, 500);
+      }, 1000);
     }
   }
 
