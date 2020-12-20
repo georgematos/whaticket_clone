@@ -55,12 +55,13 @@ export const store = async (req: Request, res: Response): Promise<Response> => {
       body,
       ticket,
       quotedMsg,
-      mediaUrl
+      mediaUrl,
+      isForwarded
     });
     if (isForwarded) {
       setTimeout(() => {
         SetTicketMessageIsForwarded(msg.id.id);
-      }, 1000);
+      }, 500);
     }
   }
 

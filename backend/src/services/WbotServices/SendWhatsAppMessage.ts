@@ -17,6 +17,7 @@ interface Request {
   ticket: Ticket;
   quotedMsg?: Message;
   mediaUrl?: string;
+  isForwarded: boolean;
 }
 
 const sendMessage = async (
@@ -30,33 +31,69 @@ const sendMessage = async (
   return message;
 };
 
+const funcaoDeEnvioFinal = async (
+  pathName: string,
+  ticket: Ticket,
+  chatId: string,
+  body: string,
+  mediaUrl?: string,
+  options?: MessageSendOptions
+): Promise<WbotMessage> => {
+  let sentMessage;
+  if (mediaUrl) {
+    const media = MessageMedia.fromFilePath(pathName);
+    sentMessage = sendMessage(ticket, chatId, media, options);
+  } else {
+    sentMessage = sendMessage(ticket, chatId, body, options);
+  }
+
+  await ticket.update({ lastMessage: body });
+  return sentMessage;
+};
+
 const SendWhatsAppMessage = async ({
   body,
   ticket,
   quotedMsg,
-  mediaUrl
+  mediaUrl,
+  isForwarded
 }: Request): Promise<WbotMessage> => {
   let quotedMsgSerializedId: string | undefined;
-  let sentMessage;
   const chatId = `${ticket.contact.number}@${ticket.isGroup ? "g" : "c"}.us`;
-  const options = { quotedMessageId: quotedMsgSerializedId };
+  const pathName = path.join(__dirname, "..", "..", "..", "public", body);
+  let options;
 
   if (quotedMsg) {
-    await GetWbotMessage(ticket, quotedMsg.id);
-    quotedMsgSerializedId = SerializeWbotMsgId(ticket, quotedMsg);
+    if (isForwarded) {
+      try {
+        return funcaoDeEnvioFinal(
+          pathName,
+          ticket,
+          chatId,
+          body,
+          mediaUrl,
+          options
+        );
+      } catch (err) {
+        console.log(err);
+        throw new AppError("ERR_SENDING_WAPP_MSG");
+      }
+    } else {
+      await GetWbotMessage(ticket, quotedMsg.id);
+      quotedMsgSerializedId = SerializeWbotMsgId(ticket, quotedMsg);
+      options = { quotedMessageId: quotedMsgSerializedId };
+    }
   }
 
   try {
-    if (mediaUrl) {
-      const pathName = path.join(__dirname, "..", "..", "..", "public", body);
-      const media = MessageMedia.fromFilePath(pathName);
-      sentMessage = sendMessage(ticket, chatId, media, options);
-    } else {
-      sentMessage = sendMessage(ticket, chatId, body, options);
-    }
-
-    await ticket.update({ lastMessage: body });
-    return sentMessage;
+    return funcaoDeEnvioFinal(
+      pathName,
+      ticket,
+      chatId,
+      body,
+      mediaUrl,
+      options
+    );
   } catch (err) {
     console.log(err);
     throw new AppError("ERR_SENDING_WAPP_MSG");
