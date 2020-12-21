@@ -1,4 +1,4 @@
-import React, { useState, useContext } from "react";
+import React, { useState, useContext, useRef } from "react";
 
 import { toast } from "react-toastify";
 
@@ -7,12 +7,16 @@ import MenuItem from "@material-ui/core/MenuItem";
 import { i18n } from "../../translate/i18n";
 import api from "../../services/api";
 import ConfirmationModal from "../ConfirmationModal";
+import ForwardMessageModal from "../ForwardMessageModal"
 import { Menu } from "@material-ui/core";
 import { ReplyMessageContext } from "../../context/ReplyingMessage/ReplyingMessageContext";
 
 const MessageOptionsMenu = ({ message, menuOpen, handleClose, anchorEl }) => {
 	const { setReplyingMessage } = useContext(ReplyMessageContext);
+
 	const [confirmationOpen, setConfirmationOpen] = useState(false);
+	const [forwardMessageModalOpen, setForwardMessageModalOpen] = useState(false);
+	const isMounted = useRef(true);
 
 	const handleDeleteMessage = async () => {
 		try {
@@ -39,6 +43,17 @@ const MessageOptionsMenu = ({ message, menuOpen, handleClose, anchorEl }) => {
 	const handleOpenConfirmationModal = e => {
 		setConfirmationOpen(true);
 		handleClose();
+	};
+
+	const handleForwardMessage = () => {
+		setForwardMessageModalOpen(true)
+		handleClose();
+	};
+
+	const handleCloseForwardMessageModal = () => {
+		if (isMounted.current) {
+			setForwardMessageModalOpen(false);
+		}
 	};
 
 	return (
@@ -73,7 +88,15 @@ const MessageOptionsMenu = ({ message, menuOpen, handleClose, anchorEl }) => {
 				<MenuItem onClick={hanldeReplyMessage}>
 					{i18n.t("messageOptionsMenu.reply")}
 				</MenuItem>
+				<MenuItem onClick={handleForwardMessage}>
+					{/* {i18n.t("messageOptionsMenu.reply")} */'Encaminhar'}
+				</MenuItem>
 			</Menu>
+			<ForwardMessageModal
+				modalOpen={forwardMessageModalOpen}
+				onClose={handleCloseForwardMessageModal}
+				message={message}
+			/>
 		</>
 	);
 };

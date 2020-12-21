@@ -132,6 +132,15 @@ const messages = {
 					actions: "Ações",
 				},
 			},
+			forwardMessage: {
+				text: "Encaminhada"
+			},
+			forwardMessageModal: {
+				title: "Encaminhar mensagem",
+				buttons: {
+					ok: "Encaminhar"
+				}
+			},
 			contactModal: {
 				title: {
 					add: "Adicionar contato",
